@@ -135,7 +135,10 @@ export default function SharePointJsonBuilder() {
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">SharePoint Migration JSON Builder</h1>
+      <div className="flex items-center gap-3 mb-4">
+        <img src="/TTT_Logo_Mark.png" alt="Logo" className="h-8 w-8" />
+          <h1 className="text-2xl font-bold">SharePoint Migration JSON Builder</h1>
+    </div>
       <div className="mb-4 space-y-2">
         <input type="file" accept="application/json" onChange={handleFileUpload} />
         <Button variant="outline" onClick={loadExample}>Load Example</Button>
