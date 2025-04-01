@@ -4,6 +4,9 @@ import { useState, ChangeEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark, oneLight } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 const exampleTask = {
   SourcePath: "\\\\trustedtech.local\\ttt\\ProService\\Management Reporting",
@@ -28,6 +31,7 @@ export default function SharePointJsonBuilder() {
       TargetListRelativePath: '',
     },
   ]);
+  const [showPreview, setShowPreview] = useState<boolean>(true);
 
   const handleChange = (index: number, field: keyof Task, value: string) => {
     const updatedTasks = [...tasks];
@@ -127,6 +131,8 @@ export default function SharePointJsonBuilder() {
     })),
   };
 
+  const prefersDark = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">SharePoint Migration JSON Builder</h1>
@@ -167,12 +173,18 @@ export default function SharePointJsonBuilder() {
         <Button onClick={addTask}>Add Task</Button>
         <Button onClick={handleDownload}>Download JSON</Button>
       </div>
-      <div className="bg-gray-100 p-4 rounded-md">
-        <h2 className="text-lg font-semibold mb-2">Live JSON Preview</h2>
-        <pre className="text-sm whitespace-pre-wrap break-words">
-          {JSON.stringify(previewJson, null, 2)}
-        </pre>
-      </div>
+      <Collapsible open={showPreview} onOpenChange={setShowPreview} className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md">
+        <CollapsibleTrigger asChild>
+          <Button variant="ghost" className="mb-2 text-left font-semibold">
+            {showPreview ? '▼ Hide JSON Preview' : '► Show JSON Preview'}
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SyntaxHighlighter language="json" style={prefersDark ? oneDark : oneLight} wrapLongLines>
+            {JSON.stringify(previewJson, null, 2)}
+          </SyntaxHighlighter>
+        </CollapsibleContent>
+      </Collapsible>
     </div>
   );
 }
