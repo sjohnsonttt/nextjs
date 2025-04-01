@@ -18,7 +18,6 @@ const exampleTask = {
   TargetListRelativePath: "General/SubFolder/AnotherSubFolder",
 };
 
-const [theme, setTheme] = useState<'dark' | 'light'>('light');
 
 type Task = {
   SourcePath: string;
@@ -286,21 +285,9 @@ export default function SharePointJsonBuilder() {
           <Button variant="ghost" className="mb-2 text-left font-semibold">
             {showPreview ? '▼ Hide JSON Preview' : '► Show JSON Preview'}
           </Button>
-          <div className="flex items-center gap-2 mb-2">
-            <label htmlFor="theme-toggle">Preview Theme:</label>
-              <select
-                id="theme-toggle"
-                value={theme}
-                onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
-                className="border rounded px-2 py-1 text-sm"
-              >
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-              </select>
-          </div>
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <SyntaxHighlighter language="json" style={theme === 'dark' ? oneDark : oneLight} wrapLongLines>
+          <SyntaxHighlighter language="json" style={prefersDark ? oneDark : oneLight} wrapLongLines>
             {JSON.stringify(previewJson, null, 2)}
           </SyntaxHighlighter>
         </CollapsibleContent>
