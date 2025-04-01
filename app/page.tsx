@@ -1,8 +1,16 @@
 "use client";
+
 import { useState, ChangeEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
+
+const exampleTask = {
+  SourcePath: "\\\\ipm.local\\ipm\\Public\\Management Reporting\\KI and KPI Reporting\\Key Performance Indicators\\Back Up Data",
+  TargetPath: "https://integratedprescription.sharepoint.com/sites/InformationTechnology_TEAMS",
+  TargetList: "Documents",
+  TargetListRelativePath: "General/Public Drive Unclaimed Folders/Management Reporting",
+};
 
 type Task = {
   SourcePath: string;
@@ -104,11 +112,27 @@ export default function SharePointJsonBuilder() {
     reader.readAsText(file);
   };
 
+  const loadExample = () => {
+    setTasks([exampleTask]);
+  };
+
+  const previewJson = {
+    Tasks: tasks.map(task => ({
+      ...task,
+      Settings: {
+        DefaultPackageFileCount: 0,
+        MigrateSiteSettings: 0,
+        MigrateRootFolder: true,
+      },
+    })),
+  };
+
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">SharePoint Migration JSON Builder</h1>
-      <div className="mb-4">
+      <div className="mb-4 space-y-2">
         <input type="file" accept="application/json" onChange={handleFileUpload} />
+        <Button variant="outline" onClick={loadExample}>Load Example</Button>
       </div>
       {tasks.map((task, index) => (
         <Card key={index} className="mb-4">
@@ -139,9 +163,15 @@ export default function SharePointJsonBuilder() {
           </CardContent>
         </Card>
       ))}
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-4 mb-6">
         <Button onClick={addTask}>Add Task</Button>
         <Button onClick={handleDownload}>Download JSON</Button>
+      </div>
+      <div className="bg-gray-100 p-4 rounded-md">
+        <h2 className="text-lg font-semibold mb-2">Live JSON Preview</h2>
+        <pre className="text-sm whitespace-pre-wrap break-words">
+          {JSON.stringify(previewJson, null, 2)}
+        </pre>
       </div>
     </div>
   );
