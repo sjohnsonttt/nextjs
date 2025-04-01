@@ -6,10 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 
 const exampleTask = {
-  SourcePath: "\\\\ipm.local\\ipm\\Public\\Management Reporting\\KI and KPI Reporting\\Key Performance Indicators\\Back Up Data",
-  TargetPath: "https://integratedprescription.sharepoint.com/sites/InformationTechnology_TEAMS",
+  SourcePath: "\\\\trustedtech.local\\ttt\\ProService\\Management Reporting",
+  TargetPath: "https://contoso.sharepoint.com/sites/ProfressionalServices",
   TargetList: "Documents",
-  TargetListRelativePath: "General/Public Drive Unclaimed Folders/Management Reporting",
+  TargetListRelativePath: "General/SubFolder/AnotherSubFolder",
 };
 
 type Task = {
@@ -138,22 +138,22 @@ export default function SharePointJsonBuilder() {
         <Card key={index} className="mb-4">
           <CardContent className="space-y-4 py-4">
             <Input
-              placeholder="SourcePath"
+              placeholder="SourcePath (e.g. \\fileserver\share\folder)"
               value={task.SourcePath}
               onChange={(e) => handleChange(index, 'SourcePath', e.target.value)}
             />
             <Input
-              placeholder="TargetPath"
+              placeholder="TargetPath (e.g. https://contoso.sharepoint.com/sites/Marketing)"
               value={task.TargetPath}
               onChange={(e) => handleChange(index, 'TargetPath', e.target.value)}
             />
             <Input
-              placeholder="TargetList"
+              placeholder="TargetList (e.g. Documents)"
               value={task.TargetList}
               onChange={(e) => handleChange(index, 'TargetList', e.target.value)}
             />
             <Input
-              placeholder="TargetListRelativePath"
+              placeholder="TargetListRelativePath (e.g. General/SubFolder/AnotherSubFolder)"
               value={task.TargetListRelativePath}
               onChange={(e) => handleChange(index, 'TargetListRelativePath', e.target.value)}
             />
