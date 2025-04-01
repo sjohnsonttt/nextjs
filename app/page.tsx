@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
+import { toast } from 'sonner';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark, oneLight } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
@@ -50,6 +51,8 @@ export default function SharePointJsonBuilder() {
 
   const [showPreview, setShowPreview] = useState<boolean>(true);
   const [confirmClear, setConfirmClear] = useState<boolean>(false);
+
+
 
   const handleChange = (index: number, field: keyof Task, value: string) => {
     const updatedTasks = [...tasks];
@@ -99,6 +102,7 @@ export default function SharePointJsonBuilder() {
       SkipFilesWithExtensions: 'txt:mp3',
     });
     setConfirmClear(false);
+    toast('Cleared all fields successfully.');
   };
 
   const removeTask = (index: number) => {
@@ -146,6 +150,7 @@ export default function SharePointJsonBuilder() {
     a.download = 'migration-tasks.json';
     a.click();
     URL.revokeObjectURL(url);
+    toast('JSON file downloaded.' );
   };
 
   const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -188,7 +193,7 @@ export default function SharePointJsonBuilder() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-4">
-        <img src="/logo.svg" alt="Logo" className="h-8 w-8" />
+        <img src="/TTT_Logo_Mark.png" alt="Logo" className="h-8 w-8" />
         <h1 className="text-2xl font-bold">SharePoint Migration JSON Builder</h1>
       </div>
       <div className="mb-4 space-y-2">
