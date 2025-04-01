@@ -4,6 +4,8 @@ import { useState, ChangeEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark, oneLight } from 'react-syntax-highlighter/dist/cjs/styles/prism';
@@ -31,12 +33,36 @@ export default function SharePointJsonBuilder() {
       TargetListRelativePath: '',
     },
   ]);
+
+  const [settings, setSettings] = useState({
+    MigrateHiddenItems: false,
+    MigrateItemsCreatedAfter: false,
+    MigrateItemsModifiedAfter: false,
+    SkipFilesWithExtensions: false,
+    MigrateOneNoteNotebook: false,
+  });
+
+  const [customValues, setCustomValues] = useState({
+    MigrateItemsCreatedAfter: '2016-05-22',
+    MigrateItemsModifiedAfter: '2016-05-22',
+    SkipFilesWithExtensions: 'txt:mp3',
+  });
+
   const [showPreview, setShowPreview] = useState<boolean>(true);
+  const [confirmClear, setConfirmClear] = useState<boolean>(false);
 
   const handleChange = (index: number, field: keyof Task, value: string) => {
     const updatedTasks = [...tasks];
     updatedTasks[index][field] = value;
     setTasks(updatedTasks);
+  };
+
+  const handleSettingToggle = (key: keyof typeof settings) => {
+    setSettings({ ...settings, [key]: !settings[key] });
+  };
+
+  const handleCustomInputChange = (field: keyof typeof customValues, value: string) => {
+    setCustomValues({ ...customValues, [field]: value });
   };
 
   const addTask = () => {
@@ -49,6 +75,30 @@ export default function SharePointJsonBuilder() {
         TargetListRelativePath: '',
       },
     ]);
+  };
+
+  const clearAll = () => {
+    setTasks([
+      {
+        SourcePath: '',
+        TargetPath: '',
+        TargetList: '',
+        TargetListRelativePath: '',
+      },
+    ]);
+    setSettings({
+      MigrateHiddenItems: false,
+      MigrateItemsCreatedAfter: false,
+      MigrateItemsModifiedAfter: false,
+      SkipFilesWithExtensions: false,
+      MigrateOneNoteNotebook: false,
+    });
+    setCustomValues({
+      MigrateItemsCreatedAfter: '2016-05-22',
+      MigrateItemsModifiedAfter: '2016-05-22',
+      SkipFilesWithExtensions: 'txt:mp3',
+    });
+    setConfirmClear(false);
   };
 
   const removeTask = (index: number) => {
@@ -65,6 +115,16 @@ export default function SharePointJsonBuilder() {
     );
   };
 
+  const buildSettings = () => {
+    const result: any = {};
+    if (settings.MigrateHiddenItems) result.MigrateHiddenItems = true;
+    if (settings.MigrateItemsCreatedAfter) result.MigrateItemsCreatedAfter = customValues.MigrateItemsCreatedAfter;
+    if (settings.MigrateItemsModifiedAfter) result.MigrateItemsModifiedAfter = customValues.MigrateItemsModifiedAfter;
+    if (settings.SkipFilesWithExtensions) result.SkipFilesWithExtensions = customValues.SkipFilesWithExtensions;
+    if (settings.MigrateOneNoteNotebook) result.MigrateOneNoteNotebook = false;
+    return result;
+  };
+
   const handleDownload = () => {
     const invalidTasks = tasks.filter((task) => !isValid(task));
     if (invalidTasks.length > 0) {
@@ -75,11 +135,7 @@ export default function SharePointJsonBuilder() {
     const json = {
       Tasks: tasks.map(task => ({
         ...task,
-        Settings: {
-          DefaultPackageFileCount: 0,
-          MigrateSiteSettings: 0,
-          MigrateRootFolder: true,
-        },
+        Settings: buildSettings(),
       })),
     };
 
@@ -123,11 +179,7 @@ export default function SharePointJsonBuilder() {
   const previewJson = {
     Tasks: tasks.map(task => ({
       ...task,
-      Settings: {
-        DefaultPackageFileCount: 0,
-        MigrateSiteSettings: 0,
-        MigrateRootFolder: true,
-      },
+      Settings: buildSettings(),
     })),
   };
 
@@ -136,9 +188,9 @@ export default function SharePointJsonBuilder() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-4">
-        <img src="/TTT_Logo_Mark.png" alt="Logo" className="h-8 w-8" />
-          <h1 className="text-2xl font-bold">SharePoint Migration JSON Builder</h1>
-    </div>
+        <img src="/logo.svg" alt="Logo" className="h-8 w-8" />
+        <h1 className="text-2xl font-bold">SharePoint Migration JSON Builder</h1>
+      </div>
       <div className="mb-4 space-y-2">
         <input type="file" accept="application/json" onChange={handleFileUpload} />
         <Button variant="outline" onClick={loadExample}>Load Example</Button>
@@ -172,10 +224,56 @@ export default function SharePointJsonBuilder() {
           </CardContent>
         </Card>
       ))}
+      <div className="mb-6 space-y-4">
+        <h2 className="text-lg font-semibold">Optional Settings</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {Object.entries(settings).map(([key, value]) => (
+            <label key={key} className="flex items-center gap-2">
+              <Checkbox id={key} checked={value} onCheckedChange={() => handleSettingToggle(key as keyof typeof settings)} />
+              {key}
+            </label>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {settings.MigrateItemsCreatedAfter && (
+            <Input
+              type="date"
+              value={customValues.MigrateItemsCreatedAfter}
+              onChange={(e) => handleCustomInputChange('MigrateItemsCreatedAfter', e.target.value)}
+            />
+          )}
+          {settings.MigrateItemsModifiedAfter && (
+            <Input
+              type="date"
+              value={customValues.MigrateItemsModifiedAfter}
+              onChange={(e) => handleCustomInputChange('MigrateItemsModifiedAfter', e.target.value)}
+            />
+          )}
+          {settings.SkipFilesWithExtensions && (
+            <Input
+              placeholder="Extensions to skip (e.g. txt:mp3)"
+              value={customValues.SkipFilesWithExtensions}
+              onChange={(e) => handleCustomInputChange('SkipFilesWithExtensions', e.target.value)}
+            />
+          )}
+        </div>
+      </div>
       <div className="flex flex-wrap gap-4 mb-6">
         <Button onClick={addTask}>Add Task</Button>
         <Button onClick={handleDownload}>Download JSON</Button>
+        <Button variant="secondary" onClick={() => setConfirmClear(true)}>Clear All</Button>
       </div>
+      <Dialog open={confirmClear} onOpenChange={setConfirmClear}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you sure you want to clear everything?</DialogTitle>
+          </DialogHeader>
+          <DialogFooter className="flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setConfirmClear(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={clearAll}>Yes, clear all</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <Collapsible open={showPreview} onOpenChange={setShowPreview} className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md">
         <CollapsibleTrigger asChild>
           <Button variant="ghost" className="mb-2 text-left font-semibold">
