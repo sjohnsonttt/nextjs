@@ -121,7 +121,7 @@ export default function SharePointJsonBuilder() {
     if (settings.MigrateItemsCreatedAfter) result.MigrateItemsCreatedAfter = customValues.MigrateItemsCreatedAfter;
     if (settings.MigrateItemsModifiedAfter) result.MigrateItemsModifiedAfter = customValues.MigrateItemsModifiedAfter;
     if (settings.SkipFilesWithExtensions) result.SkipFilesWithExtensions = customValues.SkipFilesWithExtensions;
-    if (settings.MigrateOneNoteNotebook) result.MigrateOneNoteNotebook = false;
+    if (settings.MigrateOneNoteNotebook) result.MigrateOneNoteNotebook = true;
     return result;
   };
 
